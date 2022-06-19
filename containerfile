@@ -6,7 +6,7 @@ RUN microdnf install shadow-utils \
     && chmod -R g=u /home/ocpz /etc/passwd \
     && microdnf remove shadow-utils \
     && microdnf clean all
-#RUN microdnf install python3
+#RUN microdnf reinstall python3
 #RUN microdnf install python3-pip 
 USER ocpz
 WORKDIR /home/ocpz
