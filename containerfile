@@ -1,12 +1,13 @@
 FROM registry.access.redhat.com/ubi8/ubi-minimal AS base
 RUN microdnf install python38 shadow-utils \
-    && groupadd -g 4173 ocpz \
-    && useradd -u 4173 -g ocpz -G root -s /bin/bash ocpz \
-    && chgrp -R root /home/ocpz /etc/passwd \
-    && chmod -R g=u /home/ocpz /etc/passwd \
+    && groupadd -g 4173 $PODMAN_USER \
+    && useradd -u 4173 -g $PODMAN_USER -G wheel -s /bin/bash $PODMAN_USER \
+    && echo $PODMAN_USER:$PODMAN_PASS | chpasswd \
+    && chgrp -R root /home/$PODMAN_USER /etc/passwd \
+    && chmod -R g=u /home/$PODMAN_USER /etc/passwd \
     && microdnf remove shadow-utils \
     && microdnf clean all
-WORKDIR /home/ocpz
+WORKDIR /home/$PODMAN_USER
 RUN microdnf upgrade \
   --refresh \
   --best \
@@ -23,4 +24,3 @@ RUN ansible-galaxy collection install ibm.ibm_zhmc && \
     ansible-galaxy collection install ansible.posix && \
     ansible-galaxy collection install community.libvirt && \
     ansible-galaxy install kwoodson.yedit
-
