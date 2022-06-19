@@ -1,13 +1,19 @@
 FROM registry.access.redhat.com/ubi8/ubi-minimal AS base
+
+ARG POD_USER
+ARG POD_PASS
+ENV POD_USER=$POD_USER
+ENV POD_PASS=$POD_PASS
+
 RUN microdnf install python38 shadow-utils \
-    && groupadd -g 4173 $PODMAN_USER \
-    && useradd -u 4173 -g $PODMAN_USER -G wheel -s /bin/bash $PODMAN_USER \
-    && echo $PODMAN_USER:$PODMAN_PASS | chpasswd \
-    && chgrp -R root /home/$PODMAN_USER /etc/passwd \
-    && chmod -R g=u /home/$PODMAN_USER /etc/passwd \
+    && groupadd -g 4173 $POD_USER \
+    && useradd -u 4173 -g $POD_USER -G wheel -s /bin/bash $POD_USER \
+    && echo $POD_USER:$POD_PASS | chpasswd \
+    && chgrp -R root /home/$POD_USER /etc/passwd \
+    && chmod -R g=u /home/$POD_USER /etc/passwd \
     && microdnf remove shadow-utils \
     && microdnf clean all
-WORKDIR /home/$PODMAN_USER
+WORKDIR /home/$POD_USER
 RUN microdnf upgrade \
   --refresh \
   --best \
